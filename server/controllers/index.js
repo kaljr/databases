@@ -1,49 +1,61 @@
 var models = require('../models');
 var bluebird = require('bluebird');
 var db = require('../db/index.js');
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize("chatterboxORM", "root", "");
 
+
+var User = sequelize.define('User', {
+  username: Sequelize.STRING
+});
+
+var Message = sequelize.define('Message', {
+  userid: Sequelize.INTEGER,
+  message: Sequelize.STRING,
+  roomname: Sequelize.STRING,
+  username: Sequelize.STRING
+});
 
 module.exports = {
   messages: {
     get: function (req, res) {
-      console.log("************ GET RES ******** > ");
-      db.queryDb('messages', function(results){
-        console.log("************ GET RES ******** > " + JSON.stringify(results));
-        res.end(JSON.stringify(results));
+      Message.findAll().success(function(data) {
+        res.end(JSON.stringify(data));
       });
     }, // a function which handles a get request for all messages
     post: function (req, res) {
-      console.log("**************");
-      var msgObj = {
-        message: req.body.message,
-        username : req.body.username,
-        roomname : req.body.roomname
-      }
+      Message.sync().success(function() {
+        var newMessage = Message.build({
+          username: req.body.username,
+          message: req.body.message,
+          roomname:req.body.roomname
+        });
+        newMessage.save().success(function(data) {
+          res.end(JSON.stringify(data));
+        });
+      });
+    }
+  }, // a function which handles posting a message to the database
 
-      db.insertToTable(msgObj, 'messages', function(){
-      res.end();
-    });
-
-
-    } // a function which handles posting a message to the database
-  },
 
   users: {
     // Ditto as above
     get: function (req, res) {
-      db.queryDb('users', function(results){
-        res.end(JSON.stringify(results));
+      var username = req.body.username;
+      User.findAll({ where: {username: username} }).success(function(data) {
+        res.end(JSON.stringify(data));
       });
     },
     post: function (req, res) {
-      var usrObj = {
-        username: req.body.username
-      };
-
-      db.insertToTable(usrObj, 'users', function(){
-        res.end();
-      });
-    }
+      User.sync().success(function() {
+        var newUser = User.build({
+          username: req.body.username
+        });
+        newUser.save().success(function(data) {
+          res.end(JSON.stringify(data));
+        });
+    });
   }
-};
+}
+}
 

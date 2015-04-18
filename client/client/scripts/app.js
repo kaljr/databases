@@ -147,7 +147,7 @@ $(function() {
         data.roomname = 'lobby';
 
       // Only add messages that are in our current room
-      //if (data.roomname === app.roomname) {
+      if (data.roomname === app.roomname) {
         // Create a div to hold the chats
         var $chat = $('<div class="chat"/>');
 
@@ -165,7 +165,7 @@ $(function() {
 
         // Add the message to the UI
         app.$chats.append($chat);
-      //}
+      }
     },
     addFriend: function(evt) {
       var username = $(evt.currentTarget).attr('data-username');
