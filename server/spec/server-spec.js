@@ -12,7 +12,7 @@ describe("Persistent Node Chat Server", function() {
     dbConnection = mysql.createConnection({
       user: "root",
       password: "",
-      database: "chatterbox"
+      database: "chatterboxORM"
     });
     dbConnection.connect();
 
@@ -78,6 +78,7 @@ describe("Persistent Node Chat Server", function() {
       // the message we just inserted:
       request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
         var messageLog = JSON.parse(body);
+        console.log("************   data back" + JSON.stringify(messageLog));
         expect(messageLog[0].message).to.equal("Men like you can never change!");
         expect(messageLog[0].roomname).to.equal("main");
         done();
